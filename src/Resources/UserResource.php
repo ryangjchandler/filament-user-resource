@@ -27,7 +27,7 @@ class UserResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-users';
 
-    protected static bool | Closure $enablePasswordUpdates = true;
+    protected static bool | Closure $enablePasswordUpdates = false;
 
     public static function form(Form $form): Form
     {
