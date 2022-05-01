@@ -5,21 +5,14 @@
 [![GitHub Code Style Action Status](https://img.shields.io/github/workflow/status/ryangjchandler/filament-user-resource/Check%20&%20fix%20styling?label=code%20style)](https://github.com/ryangjchandler/filament-user-resource/actions?query=workflow%3A"Check+%26+fix+styling"+branch%3Amain)
 [![Total Downloads](https://img.shields.io/packagist/dt/ryangjchandler/filament-user-resource.svg?style=flat-square)](https://packagist.org/packages/ryangjchandler/filament-user-resource)
 
-This is where your description should go. Limit it to a paragraph or two. Consider adding a small example.
+This package provides a `UserResource` class that lets you create and update `User` models from Filament. This is designed to work with Laravel's default `User` model.
 
 ## Installation
 
-You can install the package via composer:
+You can install the package via Composer:
 
 ```bash
 composer require ryangjchandler/filament-user-resource
-```
-
-You can publish and run the migrations with:
-
-```bash
-php artisan vendor:publish --tag="filament-user-resource-migrations"
-php artisan migrate
 ```
 
 You can publish the config file with:
@@ -28,24 +21,34 @@ You can publish the config file with:
 php artisan vendor:publish --tag="filament-user-resource-config"
 ```
 
-Optionally, you can publish the views using
-
-```bash
-php artisan vendor:publish --tag="filament-user-resource-views"
-```
-
-This is the contents of the published config file:
-
-```php
-return [
-];
-```
-
 ## Usage
 
+The `UserResource` class is automatically registered with Filament so there's very little setup.
+
+### Enabling password changes
+
+By default, the password for a `User` **can't** be updated from Filament. This is a personal preference, but can be enabled by calling `UserResource::enablePasswordUpdates()` inside of a service provider.
+
 ```php
-$filament-user-resource = new RyanChandler\FilamentUserResource();
-echo $filament-user-resource->echoPhrase('Hello, RyanChandler!');
+use RyanChandler\FilamentUserResources\Resources\UserResource;
+
+public function boot()
+{
+    UserResource::enablePasswordUpdates();
+}
+```
+
+You can also provide a callback function to this method to conditionally enable password updates, e.g. allowing administrators to update passwords but not other users.
+
+```php
+use RyanChandler\FilamentUserResources\Resources\UserResource;
+
+public function boot()
+{
+    UserResource::enablePasswordUpdates(function (): bool {
+        return auth()->user()->role === Role::Admin;
+    });
+}
 ```
 
 ## Testing

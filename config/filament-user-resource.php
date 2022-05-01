@@ -1,5 +1,9 @@
 <?php
-// config for RyanChandler/FilamentUserResource
+
+use App\Models\User;
+
 return [
+
+    'model' => User::class,
 
 ];
