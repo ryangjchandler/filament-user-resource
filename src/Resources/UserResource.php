@@ -23,8 +23,6 @@ use RyanChandler\FilamentUserResource\Resources\UserResource\Pages\CreateUser;
 
 class UserResource extends Resource
 {
-    protected static ?string $model = User::class;
-
     protected static ?string $navigationIcon = 'heroicon-o-users';
 
     protected static bool | Closure $enablePasswordUpdates = false;
