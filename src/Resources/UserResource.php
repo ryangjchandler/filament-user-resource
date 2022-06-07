@@ -27,42 +27,57 @@ class UserResource extends Resource
 
     protected static bool | Closure $enablePasswordUpdates = false;
 
+    protected static Closure | null $extendFormCallback = null;
+
+    public static function extendForm(Closure $callback): void
+    {
+        static::$extendFormCallback = $callback;
+    }
+
     public static function form(Form $form): Form
     {
         return $form
-            ->schema([
-                Card::make([
-                    TextInput::make('name')
-                        ->required(),
-                    TextInput::make('email')
-                        ->required()
-                        ->unique(ignoreRecord: true),
-                    TextInput::make('password')
-                        ->required()
-                        ->password()
-                        ->dehydrateStateUsing(fn ($state) => Hash::make($state))
-                        ->visible(fn ($livewire) => $livewire instanceof CreateUser)
-                        ->rule(Password::default()),
-                    Group::make([
-                        TextInput::make('new_password')
+            ->schema(function () {
+                $schema = [
+                    'left' => Card::make([
+                        'name' => TextInput::make('name')
+                            ->required(),
+                        'email' => TextInput::make('email')
+                            ->required()
+                            ->unique(ignoreRecord: true),
+                        'password' => TextInput::make('password')
+                            ->required()
                             ->password()
-                            ->label('New Password')
-                            ->nullable()
-                            ->rule(Password::default())
-                            ->dehydrated(false),
-                        TextInput::make('new_password_confirmation')
-                            ->password()
-                            ->label('Confirm New Password')
-                            ->rule('required', fn ($get) => !! $get('new_password'))
-                            ->same('new_password')
-                            ->dehydrated(false),
-                    ])->visible(static::$enablePasswordUpdates)
-                ])->columnSpan(8),
-                Card::make([
-                    Placeholder::make('created_at')
-                        ->content(fn ($record) => $record?->created_at?->diffForHumans() ?? new HtmlString('&mdash;'))
-                ])->columnSpan(4),
-            ])
+                            ->dehydrateStateUsing(fn ($state) => Hash::make($state))
+                            ->visible(fn ($livewire) => $livewire instanceof CreateUser)
+                            ->rule(Password::default()),
+                        'new_password_group' => Group::make([
+                            'new_password' => TextInput::make('new_password')
+                                ->password()
+                                ->label('New Password')
+                                ->nullable()
+                                ->rule(Password::default())
+                                ->dehydrated(false),
+                            'new_password_confirmation' => TextInput::make('new_password_confirmation')
+                                ->password()
+                                ->label('Confirm New Password')
+                                ->rule('required', fn ($get) => !! $get('new_password'))
+                                ->same('new_password')
+                                ->dehydrated(false),
+                        ])->visible(static::$enablePasswordUpdates)
+                    ])->columnSpan(8),
+                    'right' => Card::make([
+                        'created_at' => Placeholder::make('created_at')
+                            ->content(fn ($record) => $record?->created_at?->diffForHumans() ?? new HtmlString('&mdash;'))
+                    ])->columnSpan(4),
+                ];
+
+                if (static::$extendFormCallback !== null) {
+                    $schema = value(static::$extendFormCallback, $schema);
+                }
+
+                return $schema;
+            })
             ->columns(12);
     }
 
