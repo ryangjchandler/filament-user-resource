@@ -29,6 +29,12 @@ class UserResource extends Resource
 
     protected static Closure | null $extendFormCallback = null;
 
+    private static ?string $workNavigationLabel = null;
+
+    private static ?string $workPluralLabel = null;
+
+    private static ?string $workLabel = null;
+
     public static function extendForm(Closure $callback): void
     {
         static::$extendFormCallback = $callback;
@@ -41,12 +47,14 @@ class UserResource extends Resource
                 $schema = [
                     'left' => Card::make([
                         'name' => TextInput::make('name')
-                            ->required(),
+                            ->required()
+                            ->label(__('filament-user-resource::filament-user-resource.attributes.name')),
                         'email' => TextInput::make('email')
                             ->required()
                             ->unique(ignoreRecord: true),
                         'password' => TextInput::make('password')
                             ->required()
+                            ->label(__('filament-user-resource::filament-user-resource.attributes.password'))
                             ->password()
                             ->dehydrateStateUsing(fn ($state) => Hash::make($state))
                             ->visible(fn ($livewire) => $livewire instanceof CreateUser)
@@ -54,13 +62,13 @@ class UserResource extends Resource
                         'new_password_group' => Group::make([
                             'new_password' => TextInput::make('new_password')
                                 ->password()
-                                ->label('New Password')
+                                ->label(__('filament-user-resource::filament-user-resource.attributes.new_password'))
                                 ->nullable()
                                 ->rule(Password::default())
                                 ->dehydrated(false),
                             'new_password_confirmation' => TextInput::make('new_password_confirmation')
                                 ->password()
-                                ->label('Confirm New Password')
+                                ->label(__('filament-user-resource::filament-user-resource.attributes.new_password_confirmation'))
                                 ->rule('required', fn ($get) => !! $get('new_password'))
                                 ->same('new_password')
                                 ->dehydrated(false),
@@ -68,6 +76,7 @@ class UserResource extends Resource
                     ])->columnSpan(8),
                     'right' => Card::make([
                         'created_at' => Placeholder::make('created_at')
+                            ->label(__('filament-user-resource::filament-user-resource.attributes.created_at'))
                             ->content(fn ($record) => $record?->created_at?->diffForHumans() ?? new HtmlString('&mdash;'))
                     ])->columnSpan(4),
                 ];
@@ -86,12 +95,14 @@ class UserResource extends Resource
         return $table
             ->columns([
                 TextColumn::make('name')
-                    ->searchable(),
+                    ->searchable()
+                    ->label(__('filament-user-resource::filament-user-resource.attributes.name')),
                 TextColumn::make('email')
                     ->searchable(),
                 TextColumn::make('created_at')
                     ->dateTime()
-                    ->sortable(),
+                    ->sortable()
+                    ->label(__('filament-user-resource::filament-user-resource.attributes.created_at')),
             ])
             ->defaultSort('created_at', 'desc');
     }
@@ -104,6 +115,36 @@ class UserResource extends Resource
     public static function getModel(): string
     {
         return config('filament-user-resource.model');
+    }
+
+    public static function navigationLabel(?string $string): void
+    {
+        static::$workNavigationLabel = $string;
+    }
+
+    public static function pluralLabel(?string $string): void
+    {
+        static::$workPluralLabel = $string;
+    }
+
+    public static function label(?string $string): void
+    {
+        static::$workLabel = $string;
+    }
+
+    protected static function getNavigationLabel(): string
+    {
+        return static::$workNavigationLabel ?? parent::getNavigationLabel();
+    }
+
+    public static function getLabel(): ?string
+    {
+        return static::$workLabel ?? parent::getLabel();
+    }
+
+    public static function getPluralLabel(): ?string
+    {
+        return static::$workPluralLabel ?? parent::getPluralLabel();
     }
 
     public static function getRelations(): array

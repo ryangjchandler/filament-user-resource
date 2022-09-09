@@ -51,6 +51,27 @@ public function boot()
 }
 ```
 
+### Translation
+
+You can publish the translation files with:
+
+```bash
+php artisan vendor:publish --tag="filament-user-resource-translations"
+```
+
+And you can translate the resource labels under `navigationLabel`, `label` and `pluralLabel` methods: 
+
+```php
+use RyanChandler\FilamentUserResources\Resources\UserResource;
+
+public function boot()
+{
+    UserResource::navigationLabel('Users');
+    UserResource::label('User');
+    UserResource::pluralLabel('Users');
+}
+```
+
 ## Testing
 
 ```bash
