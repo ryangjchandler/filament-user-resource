@@ -29,11 +29,11 @@ class UserResource extends Resource
 
     protected static Closure | null $extendFormCallback = null;
 
-    private static ?string $workNavigationLabel = null;
+    protected static ?string $navigationLabel = null;
 
-    private static ?string $workPluralLabel = null;
+    protected static ?string $modelLabel = null;
 
-    private static ?string $workLabel = null;
+    protected static ?string $pluralModelLabel = null;
 
     public static function extendForm(Closure $callback): void
     {
@@ -119,32 +119,17 @@ class UserResource extends Resource
 
     public static function navigationLabel(?string $string): void
     {
-        static::$workNavigationLabel = $string;
+        self::$navigationLabel = $string;
     }
 
     public static function pluralLabel(?string $string): void
     {
-        static::$workPluralLabel = $string;
+        self::$pluralModelLabel = $string;
     }
 
     public static function label(?string $string): void
     {
-        static::$workLabel = $string;
-    }
-
-    protected static function getNavigationLabel(): string
-    {
-        return static::$workNavigationLabel ?? parent::getNavigationLabel();
-    }
-
-    public static function getLabel(): ?string
-    {
-        return static::$workLabel ?? parent::getLabel();
-    }
-
-    public static function getPluralLabel(): ?string
-    {
-        return static::$workPluralLabel ?? parent::getPluralLabel();
+        self::$modelLabel = $string;
     }
 
     public static function getRelations(): array
