@@ -23,8 +23,6 @@ use RyanChandler\FilamentUserResource\Resources\UserResource\Pages\CreateUser;
 
 class UserResource extends Resource
 {
-    protected static ?string $navigationIcon = 'heroicon-o-users';
-
     protected static bool | Closure $enablePasswordUpdates = false;
 
     protected static Closure | null $extendFormCallback = null;
@@ -111,6 +109,16 @@ class UserResource extends Resource
         return [
             //
         ];
+    }
+
+    protected static function getNavigationIcon(): string
+    {
+        return config('filament-user-resource.navigation_icon', 'heroicon-o-users');
+    }
+
+    protected static function getNavigationSort(): ?int
+    {
+        return config('filament-user-resource.navigation_sort', null);
     }
 
     public static function getPages(): array
